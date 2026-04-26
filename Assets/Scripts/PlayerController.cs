@@ -1,5 +1,5 @@
 using System;
-using Unity.VisualScripting;
+using UnityEditor.Animations;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviour {
     private Vector3 raycastOrigin;
     private Vector3 raycastDirection;
     private Transform rayHit;
+    [SerializeField] private Transform held;
     private GameObject currentActiveChild;
 
     private void Start() {
@@ -44,46 +45,11 @@ public class PlayerController : MonoBehaviour {
         CheckInteraction();
     }
 
+    // Movement Logic
     private void OnJump(object sender, EventArgs e) {
         if (groundedPlayer) {
             // Physics formula for jump velocity: sqrt(height * -2 * gravity)
             playerVelocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
-        }
-    }
-
-    private void OnInteract(object sender, EventArgs e) {
-        Debug.Log(rayHit);
-    }
-
-    private void CheckInteraction() {
-        Transform camTransform = Camera.main.transform;
-        raycastOrigin = camTransform.position;
-        raycastDirection = camTransform.forward;
-
-        RaycastHit hit;
-
-        if (Physics.Raycast(raycastOrigin, raycastDirection, out hit, raycastDistance, interactLayer)) {
-            rayHit = hit.transform;
-            if (rayHit.childCount > 0) {
-                        GameObject child = rayHit.GetChild(0).gameObject;
-
-                        // Only act if we hit a NEW object
-                        if (currentActiveChild != child) {
-                            DisableCurrentChild(); // Turn off the old one
-                            child.SetActive(true); // Turn on the new one
-                            currentActiveChild = child;
-                        }
-                    }
-        } else {
-            rayHit = null;
-            DisableCurrentChild();
-        }
-    }
-
-    private void DisableCurrentChild() {
-        if (currentActiveChild != null) {
-            currentActiveChild.SetActive(false);
-            currentActiveChild = null;
         }
     }
 
@@ -112,6 +78,45 @@ public class PlayerController : MonoBehaviour {
             transform.rotation = Quaternion.LookRotation(camForward);
         }
     }
+
+    // Check Interact Logic
+    private void OnInteract(object sender, EventArgs e) {
+        Debug.Log(rayHit.root);
+        rayHit.root.position = Vector3.zero;
+        rayHit.root.SetParent(held, false);
+    }
+
+    private void CheckInteraction() {
+        Transform camTransform = Camera.main.transform;
+        raycastOrigin = camTransform.position;
+        raycastDirection = camTransform.forward;
+
+        RaycastHit hit;
+
+        if (Physics.Raycast(raycastOrigin, raycastDirection, out hit, raycastDistance, interactLayer)) {
+            rayHit = hit.transform;
+            if (rayHit.childCount > 0) {
+                        GameObject child = rayHit.GetChild(0).gameObject;
+
+                        if (currentActiveChild != child) {
+                            DisableCurrentChild();
+                            child.SetActive(true);
+                            currentActiveChild = child;
+                        }
+                    }
+        } else {
+            rayHit = null;
+            DisableCurrentChild();
+        }
+    }
+
+    private void DisableCurrentChild() {
+        if (currentActiveChild != null) {
+            currentActiveChild.SetActive(false);
+            currentActiveChild = null;
+        }
+    }
+
 
 
 }

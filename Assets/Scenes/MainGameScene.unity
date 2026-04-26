@@ -1244,6 +1244,7 @@ MonoBehaviour:
   interactLayer:
     serializedVersion: 2
     m_Bits: 128
+  held: {fileID: 1162087025}
 --- !u!143 &1988752690
 CharacterController:
   m_ObjectHideFlags: 0
