@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
@@ -6,65 +7,107 @@ public class PlayerController : MonoBehaviour {
     private CharacterController controller;
 
     [Header("Movement Settings")]
-    [SerializeField] private float playerSpeed = 5.0f;
-    [SerializeField] private float jumpHeight = 1.5f;
-    [SerializeField] private float gravityValue = -9.81f;
+    [SerializeField] private float playerSpeed = 8.0f;
+    [SerializeField] private float jumpHeight = 3f;
+    [SerializeField] private float gravityMuiltiplier = 2f;
+    [SerializeField] private float gravity = -9.81f;
     private Vector3 playerVelocity;
     private bool groundedPlayer;
+
+    [Header("CheckInteraction Settings")]
+    [SerializeField] private float raycastDistance = 2.5f;
+    [SerializeField] private LayerMask interactLayer;
+    private Vector3 raycastOrigin;
+    private Vector3 raycastDirection;
+    private Transform rayHit;
+    private GameObject currentActiveChild;
 
     private void Start() {
         controller = GetComponent<CharacterController>();
 
-        // Lock the cursor to the center of the screen
         Cursor.lockState = CursorLockMode.Locked;
         PlayerInputManager.Instance.jump += OnJump;
+        PlayerInputManager.Instance.interact += OnInteract;
     }
 
 
     private void OnDisable() {
-        if(PlayerInputManager.Instance != null)
+        if(PlayerInputManager.Instance != null) {
             PlayerInputManager.Instance.jump -= OnJump;
+            PlayerInputManager.Instance.interact -= OnInteract;
+        } 
     }
 
     private void Update() {
         HandlePlayerRotaion();
         MovePlayer();
+        CheckInteraction();
     }
 
     private void OnJump(object sender, EventArgs e) {
         if (groundedPlayer) {
             // Physics formula for jump velocity: sqrt(height * -2 * gravity)
-            playerVelocity.y = Mathf.Sqrt(jumpHeight * -2f * gravityValue);
+            playerVelocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+        }
+    }
+
+    private void OnInteract(object sender, EventArgs e) {
+        Debug.Log(rayHit);
+    }
+
+    private void CheckInteraction() {
+        Transform camTransform = Camera.main.transform;
+        raycastOrigin = camTransform.position;
+        raycastDirection = camTransform.forward;
+
+        RaycastHit hit;
+
+        if (Physics.Raycast(raycastOrigin, raycastDirection, out hit, raycastDistance, interactLayer)) {
+            rayHit = hit.transform;
+            if (rayHit.childCount > 0) {
+                        GameObject child = rayHit.GetChild(0).gameObject;
+
+                        // Only act if we hit a NEW object
+                        if (currentActiveChild != child) {
+                            DisableCurrentChild(); // Turn off the old one
+                            child.SetActive(true); // Turn on the new one
+                            currentActiveChild = child;
+                        }
+                    }
+        } else {
+            rayHit = null;
+            DisableCurrentChild();
+        }
+    }
+
+    private void DisableCurrentChild() {
+        if (currentActiveChild != null) {
+            currentActiveChild.SetActive(false);
+            currentActiveChild = null;
         }
     }
 
     private void MovePlayer() {
         groundedPlayer = controller.isGrounded;
 
-        // Reset downward velocity when touching ground to prevent "force buildup"
         if (groundedPlayer && playerVelocity.y < 0) {
-            playerVelocity.y = -2f; // Slight downward force keeps isGrounded reliable
+            playerVelocity.y = -2f;
         }
 
-        // 1. Movement relative to player's facing direction
         Vector2 input = PlayerInputManager.Instance.GetPlayerMovement();
         Vector3 move = transform.right * input.x + transform.forward * input.y;
         
         controller.Move(move * Time.deltaTime * playerSpeed);
 
-        // 2. Gravity application
-        playerVelocity.y += gravityValue * Time.deltaTime;
+        playerVelocity.y += gravity * Time.deltaTime * gravityMuiltiplier;
         controller.Move(playerVelocity * Time.deltaTime);
     }
 
     private void HandlePlayerRotaion() {
-        // Get the camera's forward direction
         Vector3 camForward = Camera.main.transform.forward;
 
-        // Flatten the vector so the player doesn't tilt up/down
         camForward.y = 0;
 
-        // Apply the rotation if there is movement or constant sync is needed
         if (camForward.sqrMagnitude > 0.01f) {
             transform.rotation = Quaternion.LookRotation(camForward);
         }

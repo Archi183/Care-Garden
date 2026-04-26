@@ -4,19 +4,18 @@ using UnityEngine;
 
 public class PlayerInputManager : MonoBehaviour {
     public event EventHandler jump;
+    public event EventHandler interact;
     private PlayerInputAction inputActions;
     public static PlayerInputManager Instance { get; private set; }
 
     private void Awake() {
-        // Check if an instance already exists
         if (Instance != null && Instance != this) {
-            Destroy(gameObject); // Destroy duplicate
+            Destroy(gameObject);
             return;
         }
 
         Instance = this;
-        
-        // Optional: Keep this object alive across different scenes
+
         DontDestroyOnLoad(gameObject);
         inputActions = new PlayerInputAction();
     }
@@ -25,15 +24,21 @@ public class PlayerInputManager : MonoBehaviour {
     private void OnEnable() {
         inputActions.Enable();
         inputActions.Player.Jump.performed += PlayerJump;
+        inputActions.Player.Interact.performed += PlayerInteract;
     }
 
     private void OnDisable() {
         inputActions.Disable();
         inputActions.Player.Jump.performed -= PlayerJump;
+        inputActions.Player.Interact.performed -= PlayerInteract;
     }
 
     private void PlayerJump(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
         jump?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void PlayerInteract(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
+        interact?.Invoke(this, EventArgs.Empty);
     }
 
     public Vector2 GetPlayerMovement() {
