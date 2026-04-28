@@ -6,24 +6,32 @@ public class PlayerController : MonoBehaviour {
     private CharacterController controller;
 
     [Header("Movement Settings")]
-    [SerializeField] private float playerSpeed = 8.0f;
+    [SerializeField] private float playerNormalSpeed = 5.0f;
+    [SerializeField] private float playerMaxSpeed = 10.0f;
     [SerializeField] private float jumpHeight = 3f;
     [SerializeField] private float gravityMuiltiplier = 2f;
     [SerializeField] private float gravity = -9.81f;
+    private float playerSpeed;
     private Vector3 playerVelocity;
     private bool groundedPlayer;
+    private bool isRunning = false;
 
     private void Start() {
+        playerSpeed = playerNormalSpeed;
         controller = GetComponent<CharacterController>();
 
         Cursor.lockState = CursorLockMode.Locked;
         PlayerInputManager.Instance.jump += OnJump;
+        PlayerInputManager.Instance.runStarted += OnRunStarted;
+        PlayerInputManager.Instance.runCancelled += OnRunCancelled;
     }
 
 
     private void OnDisable() {
         if(PlayerInputManager.Instance != null) {
-            PlayerInputManager.Instance.jump -= OnJump;
+            PlayerInputManager.Instance.jump -= OnJump; 
+            PlayerInputManager.Instance.runStarted -= OnRunStarted;
+            PlayerInputManager.Instance.runCancelled -= OnRunCancelled; 
         } 
     }
 
@@ -39,6 +47,25 @@ public class PlayerController : MonoBehaviour {
             playerVelocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }
     }
+
+    private void OnRunStarted(object sender, EventArgs e) {
+        if (!isRunning) {
+            isRunning = true;
+            playerSpeed = playerMaxSpeed;
+        } else {
+            return;
+        }
+    }
+
+    private void OnRunCancelled(object sender, EventArgs e) {
+        if (isRunning) {
+            isRunning = false;
+            playerSpeed = playerNormalSpeed;
+        } else {
+            return;
+        }
+    }
+
 
     private void MovePlayer() {
         groundedPlayer = controller.isGrounded;

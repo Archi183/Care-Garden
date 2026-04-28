@@ -3,6 +3,8 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerInputManager : MonoBehaviour {
+    public event EventHandler runStarted;
+    public event EventHandler runCancelled;
     public event EventHandler jump;
     public event EventHandler interact;
     public event EventHandler action;
@@ -26,6 +28,8 @@ public class PlayerInputManager : MonoBehaviour {
 
     private void OnEnable() {
         inputActions.Enable();
+        inputActions.Player.Run.performed += PlayerRunStarted;
+        inputActions.Player.Run.canceled += PlayerRunCancelled;
         inputActions.Player.Jump.performed += PlayerJump;
         inputActions.Player.Interact.performed += PlayerInteract;
         inputActions.Player.Action.performed += PlayerAction;
@@ -35,11 +39,21 @@ public class PlayerInputManager : MonoBehaviour {
 
     private void OnDisable() {
         inputActions.Disable();
+        inputActions.Player.Run.performed -= PlayerRunStarted;
+        inputActions.Player.Run.canceled -= PlayerRunCancelled;
         inputActions.Player.Jump.performed -= PlayerJump;
         inputActions.Player.Interact.performed -= PlayerInteract;
         inputActions.Player.Action.performed -= PlayerAction;
         inputActions.Player.Place.performed -= PlayerPlaceStarted;
         inputActions.Player.Place.canceled -= PlayerPlaceCanceled;
+    }
+
+    private void PlayerRunStarted(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
+        runStarted?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void PlayerRunCancelled(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
+        runCancelled?.Invoke(this, EventArgs.Empty);
     }
 
     private void PlayerJump(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
