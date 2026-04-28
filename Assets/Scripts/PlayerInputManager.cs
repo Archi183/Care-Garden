@@ -6,7 +6,8 @@ public class PlayerInputManager : MonoBehaviour {
     public event EventHandler jump;
     public event EventHandler interact;
     public event EventHandler action;
-    public event EventHandler place;
+    public event EventHandler placeStarted;
+    public event EventHandler placeCanceled;
     private PlayerInputAction inputActions;
     public static PlayerInputManager Instance { get; private set; }
 
@@ -28,7 +29,8 @@ public class PlayerInputManager : MonoBehaviour {
         inputActions.Player.Jump.performed += PlayerJump;
         inputActions.Player.Interact.performed += PlayerInteract;
         inputActions.Player.Action.performed += PlayerAction;
-        inputActions.Player.Place.performed += PlayerPlace;
+        inputActions.Player.Place.performed += PlayerPlaceStarted;
+        inputActions.Player.Place.canceled += PlayerPlaceCanceled;
     }
 
     private void OnDisable() {
@@ -36,7 +38,8 @@ public class PlayerInputManager : MonoBehaviour {
         inputActions.Player.Jump.performed -= PlayerJump;
         inputActions.Player.Interact.performed -= PlayerInteract;
         inputActions.Player.Action.performed -= PlayerAction;
-        inputActions.Player.Place.performed -= PlayerPlace;
+        inputActions.Player.Place.performed -= PlayerPlaceStarted;
+        inputActions.Player.Place.canceled -= PlayerPlaceCanceled;
     }
 
     private void PlayerJump(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
@@ -49,8 +52,12 @@ public class PlayerInputManager : MonoBehaviour {
     private void PlayerAction(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
         action?.Invoke(this, EventArgs.Empty);
     }
-    private void PlayerPlace(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
-        place?.Invoke(this, EventArgs.Empty);
+    private void PlayerPlaceStarted(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
+        placeStarted?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void PlayerPlaceCanceled(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
+        placeCanceled?.Invoke(this, EventArgs.Empty);
     }
 
     public Vector2 GetPlayerMovement() {

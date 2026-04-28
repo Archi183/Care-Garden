@@ -969,7 +969,7 @@ MonoBehaviour:
       Enabled: 1
       Input:
         InputAction: {fileID: 3814674947545811156, guid: f3a4d42aaf90a00008b1249209584dab, type: 3}
-        Gain: 4
+        Gain: 4.5
         CancelDeltaTime: 0
       InputValue: 0
       Driver:
@@ -1280,7 +1280,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHeld
   useGrid: 1
-  gridSize: 1
+  gridSize: 0.5
   groundLayer:
     serializedVersion: 2
     m_Bits: 256

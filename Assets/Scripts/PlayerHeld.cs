@@ -4,47 +4,78 @@ using UnityEngine;
 public class PlayerHeld : MonoBehaviour {
     [Header("Placement Settings")]
     [SerializeField] private bool useGrid = true;
-    [SerializeField] private float gridSize = 1.0f;
+    [SerializeField] private float gridSize = .5f;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private Transform holdSocket;
+    private bool isPlacing = false;
     private GameObject heldObject;
+    private Vector3 currentPreviewPosition;
 
 
     private void Start() {
         PlayerInputManager.Instance.action += OnAction;
-        PlayerInputManager.Instance.place += OnPlace;
+        PlayerInputManager.Instance.placeStarted += OnPlaceStarted;
+        PlayerInputManager.Instance.placeCanceled += OnPlaceCanceled;
     }
 
     private void OnDisable() {
         PlayerInputManager.Instance.action -= OnAction;
-        PlayerInputManager.Instance.place -= OnPlace;
+        PlayerInputManager.Instance.placeStarted -= OnPlaceStarted;
+        PlayerInputManager.Instance.placeCanceled -= OnPlaceCanceled;
+    }
+
+    private void Update() {
+        OnPlaceUpdatePreview();
+    }
+
+    private void OnPlaceStarted(object sender, EventArgs e) {
+        if (heldObject == null) return;
+        isPlacing = true;
+    }
+
+    private void OnPlaceCanceled(object sender, EventArgs e) {
+        if (!isPlacing || heldObject == null) return;
+        PlaceObject(currentPreviewPosition);
+        isPlacing = false;
+    }
+
+    private void OnPlaceUpdatePreview() {
+        float rayStartHight = 4f;
+        float rayDistFromPLayer = 2f;
+        float placingRaycastDepth = 10f;
+        if (!isPlacing || heldObject == null) return;
+
+        Transform cam = Camera.main.transform;
+
+        Vector3 placingRaycastOrigin = cam.position + cam.forward * rayDistFromPLayer;
+        placingRaycastOrigin.y += rayStartHight;
+
+        if (Physics.Raycast(placingRaycastOrigin, Vector3.down, out RaycastHit hit, placingRaycastDepth, groundLayer)) {
+            currentPreviewPosition = hit.point;
+
+            if (useGrid) {
+                currentPreviewPosition.x = Mathf.Round(currentPreviewPosition.x / gridSize) * gridSize;
+                currentPreviewPosition.z = Mathf.Round(currentPreviewPosition.z / gridSize) * gridSize;
+            }
+
+            heldObject.transform.position = currentPreviewPosition;
+        }
+
     }
 
     private void OnAction(object sender, EventArgs e) {
         
     }
 
+    private void PlaceObject(Vector3 finalPosition) {
+        heldObject.transform.SetParent(null);
+        heldObject.transform.position = finalPosition;
 
-    private void OnPlace(object sender, EventArgs e) {
-        if (heldObject == null) return;
-
-        Transform cam = Camera.main.transform;
-
-        if (Physics.Raycast(cam.position, cam.forward, out RaycastHit hit, 10f, groundLayer)) {
-            
-            Vector3 targetPos = hit.point;
-            Debug.Log(targetPos);
-
-            if (useGrid) {
-                targetPos.x = Mathf.Round(targetPos.x / gridSize) * gridSize;
-                targetPos.z = Mathf.Round(targetPos.z / gridSize) * gridSize;
-            }
-
-            Vector3 skyOrigin = new Vector3(targetPos.x, targetPos.y + 5f, targetPos.z);
-            if (Physics.Raycast(skyOrigin, Vector3.down, out RaycastHit groundHit, 10f, groundLayer)) {
-                PlaceObject(groundHit.point);
-            }
+        if (heldObject.TryGetComponent(out Rigidbody rb)) {
+            rb.isKinematic = false;
         }
+
+        heldObject = null;
     }
 
     public bool HasObject() {
@@ -64,17 +95,5 @@ public class PlayerHeld : MonoBehaviour {
         heldObject.transform.localPosition = Vector3.zero;
         heldObject.transform.localRotation = Quaternion.identity;
     }
-
-    private void PlaceObject(Vector3 finalPosition) {
-        heldObject.transform.SetParent(null);
-        heldObject.transform.position = finalPosition;
-
-        if (heldObject.TryGetComponent(out Rigidbody rb)) {
-            rb.isKinematic = false;
-        }
-
-        heldObject = null;
-    }
-
 
 }
