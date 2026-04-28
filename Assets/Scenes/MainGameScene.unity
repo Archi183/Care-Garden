@@ -390,12 +390,12 @@ Camera:
   m_ShutterSpeed: 0.005
   m_Aperture: 16
   m_FocusDistance: 10
-  m_FocalLength: 50
+  m_FocalLength: 13.858138
   m_BladeCount: 5
   m_Curvature: {x: 2, y: 11}
   m_BarrelClipping: 0.25
   m_Anamorphism: 0
-  m_SensorSize: {x: 36, y: 24}
+  m_SensorSize: {x: 21.946, y: 16.002}
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
@@ -405,7 +405,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60.000004
+  field of view: 60
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -462,7 +462,7 @@ MonoBehaviour:
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
   m_RenderPostProcessing: 1
-  m_Antialiasing: 0
+  m_Antialiasing: 3
   m_AntialiasingQuality: 2
   m_StopNaN: 0
   m_Dithering: 0
@@ -913,7 +913,7 @@ MonoBehaviour:
     LookAtTarget: {fileID: 0}
     CustomLookAtTarget: 0
   Lens:
-    FieldOfView: 60.000004
+    FieldOfView: 60
     OrthographicSize: 5
     NearClipPlane: 0.3
     FarClipPlane: 1000
@@ -1198,6 +1198,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1988752688}
   - component: {fileID: 1988752689}
+  - component: {fileID: 1988752692}
+  - component: {fileID: 1988752691}
   - component: {fileID: 1988752690}
   m_Layer: 0
   m_Name: Player
@@ -1240,11 +1242,6 @@ MonoBehaviour:
   jumpHeight: 3
   gravityMuiltiplier: 2
   gravity: -9.81
-  raycastDistance: 3
-  interactLayer:
-    serializedVersion: 2
-    m_Bits: 128
-  held: {fileID: 1162087025}
 --- !u!143 &1988752690
 CharacterController:
   m_ObjectHideFlags: 0
@@ -1270,6 +1267,41 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1988752691
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1988752687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25168cd5cfcd669bd8fd554dcced0cd6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHeld
+  useGrid: 1
+  gridSize: 1
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  holdSocket: {fileID: 1162087025}
+--- !u!114 &1988752692
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1988752687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 048066aa2930cd62a86b27bdbfb847c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInteraction
+  raycastDistance: 2.5
+  interactLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  playerHeld: {fileID: 1988752691}
 --- !u!1 &2044818801
 GameObject:
   m_ObjectHideFlags: 0
@@ -1461,6 +1493,10 @@ PrefabInstance:
     - target: {fileID: 4417903381065236196, guid: 9e802135f6e699504b97272679790ca9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5290037045927777817, guid: 9e802135f6e699504b97272679790ca9, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 8797582745584309422, guid: 9e802135f6e699504b97272679790ca9, type: 3}
       propertyPath: m_Name

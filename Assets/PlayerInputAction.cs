@@ -127,6 +127,24 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Action"",
+                    ""type"": ""Button"",
+                    ""id"": ""45d979e0-0a87-4905-a340-00d65deffcab"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Place"",
+                    ""type"": ""Button"",
+                    ""id"": ""ba63f883-5454-430c-9d80-d7052b8f9dcf"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -217,6 +235,28 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                     ""action"": ""Interact"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""465f78cc-a91a-411a-982e-f9f0e19615ed"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""61df4705-3b2f-44dd-a83d-4c325e5ab672"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Place"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -229,6 +269,8 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
+        m_Player_Action = m_Player.FindAction("Action", throwIfNotFound: true);
+        m_Player_Place = m_Player.FindAction("Place", throwIfNotFound: true);
     }
 
     ~@PlayerInputAction()
@@ -313,6 +355,8 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Look;
     private readonly InputAction m_Player_Jump;
     private readonly InputAction m_Player_Interact;
+    private readonly InputAction m_Player_Action;
+    private readonly InputAction m_Player_Place;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -340,6 +384,14 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Interact".
         /// </summary>
         public InputAction @Interact => m_Wrapper.m_Player_Interact;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Action".
+        /// </summary>
+        public InputAction @Action => m_Wrapper.m_Player_Action;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Place".
+        /// </summary>
+        public InputAction @Place => m_Wrapper.m_Player_Place;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -378,6 +430,12 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
             @Interact.started += instance.OnInteract;
             @Interact.performed += instance.OnInteract;
             @Interact.canceled += instance.OnInteract;
+            @Action.started += instance.OnAction;
+            @Action.performed += instance.OnAction;
+            @Action.canceled += instance.OnAction;
+            @Place.started += instance.OnPlace;
+            @Place.performed += instance.OnPlace;
+            @Place.canceled += instance.OnPlace;
         }
 
         /// <summary>
@@ -401,6 +459,12 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
             @Interact.started -= instance.OnInteract;
             @Interact.performed -= instance.OnInteract;
             @Interact.canceled -= instance.OnInteract;
+            @Action.started -= instance.OnAction;
+            @Action.performed -= instance.OnAction;
+            @Action.canceled -= instance.OnAction;
+            @Place.started -= instance.OnPlace;
+            @Place.performed -= instance.OnPlace;
+            @Place.canceled -= instance.OnPlace;
         }
 
         /// <summary>
@@ -469,5 +533,19 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnInteract(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Action" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnAction(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Place" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnPlace(InputAction.CallbackContext context);
     }
 }
