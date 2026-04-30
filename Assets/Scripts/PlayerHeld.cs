@@ -4,15 +4,18 @@ using UnityEngine;
 public class PlayerHeld : MonoBehaviour {
     [Header("Placement Settings")]
     [SerializeField] private bool useGrid = true;
-    [SerializeField] private float gridSize = .5f;
+    [SerializeField] private float gridSize = 0.18f;
+    [SerializeField] private float rayDistFromPLayer = 3f;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private Transform holdSocket;
     private bool isPlacing = false;
     private GameObject heldObject;
     private Vector3 currentPreviewPosition;
-
+    private GameObject groundGrid;
 
     private void Start() {
+        groundGrid = GameObject.Find("GardenGroundGrid");
+        groundGrid.SetActive(false);
         PlayerInputManager.Instance.action += OnAction;
         PlayerInputManager.Instance.placeStarted += OnPlaceStarted;
         PlayerInputManager.Instance.placeCanceled += OnPlaceCanceled;
@@ -31,17 +34,18 @@ public class PlayerHeld : MonoBehaviour {
     private void OnPlaceStarted(object sender, EventArgs e) {
         if (heldObject == null) return;
         isPlacing = true;
+        if (useGrid) groundGrid.SetActive(true);
     }
 
     private void OnPlaceCanceled(object sender, EventArgs e) {
         if (!isPlacing || heldObject == null) return;
         PlaceObject(currentPreviewPosition);
         isPlacing = false;
+        groundGrid.SetActive(false);
     }
 
     private void OnPlaceUpdatePreview() {
         float rayStartHight = 4f;
-        float rayDistFromPLayer = 2f;
         float placingRaycastDepth = 10f;
         if (!isPlacing || heldObject == null) return;
 
