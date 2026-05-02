@@ -28,7 +28,6 @@ public class PlayerInteraction : MonoBehaviour {
     // Check Interact Logic
     private void OnInteract(object sender, EventArgs e) {
         if (rayHit != null && !playerHeld.HasObject()) {
-            Debug.Log(rayHit.root);
             playerHeld.PickUp(rayHit.root.gameObject);
         } else {
           return;  

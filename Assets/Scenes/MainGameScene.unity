@@ -1687,7 +1687,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHeld
   useGrid: 1
-  gridSize: 0.36
+  gridSizeMultiplier: 2
+  gridSize: 0.18
   rayDistFromPLayer: 3
   groundLayer:
     serializedVersion: 2

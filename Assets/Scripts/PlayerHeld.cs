@@ -4,6 +4,7 @@ using UnityEngine;
 public class PlayerHeld : MonoBehaviour {
     [Header("Placement Settings")]
     [SerializeField] private bool useGrid = true;
+    [SerializeField] private float gridSizeMultiplier = 2f;
     [SerializeField] private float gridSize = 0.18f;
     [SerializeField] private float rayDistFromPLayer = 3f;
     [SerializeField] private LayerMask groundLayer;
@@ -16,12 +17,14 @@ public class PlayerHeld : MonoBehaviour {
     private void Start() {
         groundGrid = GameObject.Find("GardenGroundGrid");
         groundGrid.SetActive(false);
+        PlayerInputManager.Instance.interact += ToggleGrid;
         PlayerInputManager.Instance.action += OnAction;
         PlayerInputManager.Instance.placeStarted += OnPlaceStarted;
         PlayerInputManager.Instance.placeCanceled += OnPlaceCanceled;
     }
 
     private void OnDisable() {
+        PlayerInputManager.Instance.interact -= ToggleGrid;
         PlayerInputManager.Instance.action -= OnAction;
         PlayerInputManager.Instance.placeStarted -= OnPlaceStarted;
         PlayerInputManager.Instance.placeCanceled -= OnPlaceCanceled;
@@ -31,10 +34,17 @@ public class PlayerHeld : MonoBehaviour {
         OnPlaceUpdatePreview();
     }
 
+    private void ToggleGrid(object sender, EventArgs e) {
+        if (heldObject != null && isPlacing) {
+            useGrid = !useGrid;
+            groundGrid.SetActive(useGrid);
+        }
+        
+    }
     private void OnPlaceStarted(object sender, EventArgs e) {
         if (heldObject == null) return;
         isPlacing = true;
-        if (useGrid) groundGrid.SetActive(true);
+        groundGrid.SetActive(true);
     }
 
     private void OnPlaceCanceled(object sender, EventArgs e) {
@@ -45,6 +55,7 @@ public class PlayerHeld : MonoBehaviour {
     }
 
     private void OnPlaceUpdatePreview() {
+        float gridValue = gridSize * gridSizeMultiplier;
         float rayStartHight = 4f;
         float placingRaycastDepth = 10f;
         if (!isPlacing || heldObject == null) return;
@@ -58,8 +69,8 @@ public class PlayerHeld : MonoBehaviour {
             currentPreviewPosition = hit.point;
 
             if (useGrid) {
-                currentPreviewPosition.x = Mathf.Round(currentPreviewPosition.x / gridSize) * gridSize;
-                currentPreviewPosition.z = Mathf.Round(currentPreviewPosition.z / gridSize) * gridSize;
+                currentPreviewPosition.x = Mathf.Round(currentPreviewPosition.x / gridValue) * gridValue;
+                currentPreviewPosition.z = Mathf.Round(currentPreviewPosition.z / gridValue) * gridValue;
             }
 
             heldObject.transform.position = currentPreviewPosition;

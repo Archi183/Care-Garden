@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e9534cf5e79297ceba45bebc30e39c1, type: 3}
+  m_Name: MangoPLantSO
+  m_EditorClassIdentifier: Assembly-CSharp::PlantSO
+  plantName: Mango
+  daysToGrow: 5
+  growthStages:
+  - {fileID: 5871537341909614431, guid: ba07a2bd726b8b271979579def419b49, type: 3}
+  - {fileID: 169134726695228705, guid: 267b2476db5180391b7edd9ebd696345, type: 3}
+  - {fileID: 5315520735263149738, guid: 42131679d623cf1ac98dba6737bdee45, type: 3}
+  - {fileID: 173703535453416097, guid: 49a163b81b56699b0ae9459b5d37b002, type: 3}
+  - {fileID: 2203665927786770897, guid: 872501dfc926fa7f69c98b13c2f043ef, type: 3}
