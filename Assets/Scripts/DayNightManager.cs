@@ -7,6 +7,7 @@ public class DayNightManager : MonoBehaviour {
     public event EventHandler dayEnd; 
     [SerializeField] private float perDayTimeMin = 20f;
     private Light sun;
+    private float currentSunAngle;
     
     [Header("Clock Settings")]
     [SerializeField] private float currentTime = 0.25f;
@@ -54,7 +55,10 @@ public class DayNightManager : MonoBehaviour {
 
     // Sun rotation logic
     private void UpdateSun() {
+        float percentRotation = 5f;
         float sunAngle = (currentTime * 360f) - 90f;
-        sun.transform.rotation = Quaternion.Euler(sunAngle, 270f, 0f);
+        Quaternion targetRotation = Quaternion.Euler(sunAngle, 270f, 0f);
+        sun.transform.rotation = Quaternion.Slerp(sun.transform.rotation, targetRotation, Time.deltaTime * percentRotation);
     }
+
 }
