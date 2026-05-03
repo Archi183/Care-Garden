@@ -521,6 +521,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DayNightManager
   perDayTimeMin: 20
+  currentTime: 0.25
 --- !u!4 &326914241
 Transform:
   m_ObjectHideFlags: 0
