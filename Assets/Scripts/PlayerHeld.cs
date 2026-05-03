@@ -8,6 +8,7 @@ public class PlayerHeld : MonoBehaviour {
     [SerializeField] private float gridSize = 0.18f;
     [SerializeField] private float rayDistFromPLayer = 3f;
     [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private int plantPlacedLayer = 6;
     [SerializeField] private Transform holdSocket;
     private bool isPlacing = false;
     private GameObject heldObject;
@@ -18,14 +19,16 @@ public class PlayerHeld : MonoBehaviour {
         groundGrid = GameObject.Find("GardenGroundGrid");
         groundGrid.SetActive(false);
         PlayerInputManager.Instance.interact += ToggleGrid;
-        PlayerInputManager.Instance.action += OnAction;
+        PlayerInputManager.Instance.actionStarted += OnActionStarted;
+        PlayerInputManager.Instance.actionCanceled += OnPlaceCanceled;
         PlayerInputManager.Instance.placeStarted += OnPlaceStarted;
         PlayerInputManager.Instance.placeCanceled += OnPlaceCanceled;
     }
 
     private void OnDisable() {
         PlayerInputManager.Instance.interact -= ToggleGrid;
-        PlayerInputManager.Instance.action -= OnAction;
+        PlayerInputManager.Instance.actionStarted -= OnActionStarted;
+        PlayerInputManager.Instance.actionCanceled -= OnPlaceCanceled;
         PlayerInputManager.Instance.placeStarted -= OnPlaceStarted;
         PlayerInputManager.Instance.placeCanceled -= OnPlaceCanceled;
     }
@@ -78,8 +81,12 @@ public class PlayerHeld : MonoBehaviour {
 
     }
 
-    private void OnAction(object sender, EventArgs e) {
-        
+    private void OnActionStarted(object sender, EventArgs e) {
+        if (heldObject == null) return;
+        isPlacing = true;
+        groundGrid.SetActive(true);
+
+        SetLayerRecursively(heldObject, plantPlacedLayer);
     }
 
     private void PlaceObject(Vector3 finalPosition) {
@@ -91,6 +98,15 @@ public class PlayerHeld : MonoBehaviour {
         }
 
         heldObject = null;
+    }
+
+    private void SetLayerRecursively(GameObject obj, int newLayer) {
+        if (obj == null) return;
+
+        obj.layer = newLayer;
+        foreach (Transform child in obj.transform) {
+            SetLayerRecursively(child.gameObject, newLayer);
+        }
     }
 
     public bool HasObject() {

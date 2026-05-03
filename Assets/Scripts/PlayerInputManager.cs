@@ -7,7 +7,8 @@ public class PlayerInputManager : MonoBehaviour {
     public event EventHandler runCancelled;
     public event EventHandler jump;
     public event EventHandler interact;
-    public event EventHandler action;
+    public event EventHandler actionStarted;
+    public event EventHandler actionCanceled;
     public event EventHandler placeStarted;
     public event EventHandler placeCanceled;
     private PlayerInputAction inputActions;
@@ -32,7 +33,8 @@ public class PlayerInputManager : MonoBehaviour {
         inputActions.Player.Run.canceled += PlayerRunCancelled;
         inputActions.Player.Jump.performed += PlayerJump;
         inputActions.Player.Interact.performed += PlayerInteract;
-        inputActions.Player.Action.performed += PlayerAction;
+        inputActions.Player.Action.performed += PlayerActionStarted;
+        inputActions.Player.Action.canceled += PlayerActionCanceled;
         inputActions.Player.Place.performed += PlayerPlaceStarted;
         inputActions.Player.Place.canceled += PlayerPlaceCanceled;
     }
@@ -43,7 +45,8 @@ public class PlayerInputManager : MonoBehaviour {
         inputActions.Player.Run.canceled -= PlayerRunCancelled;
         inputActions.Player.Jump.performed -= PlayerJump;
         inputActions.Player.Interact.performed -= PlayerInteract;
-        inputActions.Player.Action.performed -= PlayerAction;
+        inputActions.Player.Action.performed -= PlayerActionStarted;
+        inputActions.Player.Action.canceled -= PlayerActionCanceled;
         inputActions.Player.Place.performed -= PlayerPlaceStarted;
         inputActions.Player.Place.canceled -= PlayerPlaceCanceled;
     }
@@ -63,8 +66,12 @@ public class PlayerInputManager : MonoBehaviour {
     private void PlayerInteract(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
         interact?.Invoke(this, EventArgs.Empty);
     }
-    private void PlayerAction(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
-        action?.Invoke(this, EventArgs.Empty);
+    private void PlayerActionStarted(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
+        actionStarted?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void PlayerActionCanceled(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
+        actionCanceled?.Invoke(this, EventArgs.Empty);
     }
     private void PlayerPlaceStarted(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
         placeStarted?.Invoke(this, EventArgs.Empty);
