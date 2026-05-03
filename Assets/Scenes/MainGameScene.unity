@@ -1895,6 +1895,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7b1e92c6b822417d8c4a9ddafb22ab5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  globalCurrentDay: 1
 --- !u!4 &1738042554
 Transform:
   m_ObjectHideFlags: 0

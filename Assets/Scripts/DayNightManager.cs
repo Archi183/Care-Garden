@@ -2,19 +2,25 @@ using System;
 using UnityEngine;
 
 public class DayNightManager : MonoBehaviour {
+    public static DayNightManager Instance { get; private set; }
+
     public event EventHandler dayEnd; 
     [SerializeField] private float perDayTimeMin = 20f;
     private Light sun;
     
     [Header("Clock Settings")]
     [SerializeField] private float currentTime = 0.25f;
-    private float currentDay;
+
+    private void Awake() {
+        if (Instance != null && Instance != this) {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+    }
 
     private void Start() {
         sun = RenderSettings.sun;
-        if (sun != null) {
-            Debug.Log("Sun source found: " + sun.name);  
-        }
 
     }   
 
@@ -33,8 +39,6 @@ public class DayNightManager : MonoBehaviour {
         // 2. Check for New Day
         if (currentTime >= 1f) {
             currentTime = 0f;
-            currentDay++;
-            Debug.Log("Day " + currentDay + " has started!");
             // This is where you will eventually tell your plants to grow!
             dayEnd?.Invoke(this, EventArgs.Empty);
         }
@@ -44,7 +48,7 @@ public class DayNightManager : MonoBehaviour {
         int minutes = Mathf.FloorToInt((totalHours * 60f) % 60f);
 
         string timeString = string.Format("{0:00}:{1:00}", hours, minutes);
-        Debug.Log("Current Time: " + timeString);
+        // Debug.Log("Current Time: " + timeString);
 
     }
 
