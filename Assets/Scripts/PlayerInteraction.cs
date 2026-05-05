@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 
 public class PlayerInteraction : MonoBehaviour {
+    public static PlayerInteraction Instance { get; private set; }
     [Header("CheckInteraction Settings")]
     [SerializeField] private float raycastDistance = 2.5f;
     [SerializeField] private LayerMask interactLayer;
@@ -11,6 +12,14 @@ public class PlayerInteraction : MonoBehaviour {
     private GameObject currentActiveChild;
     [SerializeField] private PlayerHeld playerHeld;
 
+
+    private void Awake() {
+        if (Instance != null && Instance != this) {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+    }
 
     private void Start() {
         PlayerInputManager.Instance.interact += OnInteract;

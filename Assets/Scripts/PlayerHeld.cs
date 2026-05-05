@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 
 public class PlayerHeld : MonoBehaviour {
+    public static PlayerHeld Instance { get; private set; }
     [Header("Placement Settings")]
     [SerializeField] private bool useGrid = true;
     [SerializeField] private float gridSizeMultiplier = 2f;
@@ -14,6 +15,15 @@ public class PlayerHeld : MonoBehaviour {
     private GameObject heldObject;
     private Vector3 currentPreviewPosition;
     private GameObject groundGrid;
+
+
+    private void Awake() {
+        if (Instance != null && Instance != this) {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+    }
 
     private void Start() {
         groundGrid = GameObject.Find("GardenGroundGrid");
