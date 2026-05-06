@@ -8,9 +8,6 @@ public class PlantInstance : MonoBehaviour {
     private Transform canSpawnPlant;
     private Vector3 spawnPosition;
     private Quaternion spawnRotation;
-    [SerializeField] private Material canPlace;
-    [SerializeField] private Material canNotPlace;
-    [SerializeField] private LayerMask targetMask;
 
     private void Start() {
         spawnPosition = Vector3.zero;
@@ -63,13 +60,6 @@ public class PlantInstance : MonoBehaviour {
 
     private void OnPlacementEnd(object sender, EventArgs e) {
         canSpawnPlant.gameObject.SetActive(false);  
-    }
-
-    private void OnCollisionEnter(Collision collision) {
-        if (((1 << collision.gameObject.layer) & targetMask) != 0) {
-            Debug.Log("Hit something in the mask!");
-            canSpawnPlant.GetComponent<Renderer>().material = canNotPlace;
-        }
     }
 
 

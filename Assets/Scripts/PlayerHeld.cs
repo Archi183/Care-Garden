@@ -13,6 +13,7 @@ public class PlayerHeld : MonoBehaviour {
     [SerializeField] private Transform holdSocket;
     private bool isPlacing = false;
     private GameObject heldObject;
+    private Collider childCol;
     private Vector3 currentPreviewPosition;
     private GameObject groundGrid;
 
@@ -58,6 +59,9 @@ public class PlayerHeld : MonoBehaviour {
         if (heldObject == null) return;
         isPlacing = true;
         groundGrid.SetActive(true);
+        if (childCol != null) {
+            childCol.enabled = true;
+        }
     }
 
     private void OnPlaceCanceled(object sender, EventArgs e) {
@@ -65,6 +69,10 @@ public class PlayerHeld : MonoBehaviour {
         PlaceObject(currentPreviewPosition);
         isPlacing = false;
         groundGrid.SetActive(false);
+        if (childCol != null) {
+            childCol.enabled = true;
+            childCol = null;
+        }
     }
 
     private void OnPlaceUpdatePreview() {
@@ -96,6 +104,10 @@ public class PlayerHeld : MonoBehaviour {
         isPlacing = true;
         groundGrid.SetActive(true);
 
+        if (childCol != null) {
+            childCol.enabled = true;
+        }
+
         SetLayerRecursively(heldObject, plantPlacedLayer);
     }
 
@@ -125,7 +137,13 @@ public class PlayerHeld : MonoBehaviour {
 
     public void PickUp(GameObject obj) {
         heldObject = obj;
+        childCol = obj.GetComponentInChildren<BoxCollider>();
         
+        if (childCol != null) {
+            childCol.enabled = false;
+        }
+
+
         // Disable physics so it doesn't fight the player
         if (heldObject.TryGetComponent(out Rigidbody rb)) {
             rb.isKinematic = true;
