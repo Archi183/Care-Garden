@@ -1,4 +1,5 @@
 using System;
+using NUnit.Framework;
 using UnityEngine;
 
 public class PlayerHeld : MonoBehaviour {
@@ -15,6 +16,7 @@ public class PlayerHeld : MonoBehaviour {
     private GameObject heldObject;
     private Collider childCol;
     private Vector3 currentPreviewPosition;
+    private Quaternion currentPreviewRotation;
     private GameObject groundGrid;
 
 
@@ -27,6 +29,7 @@ public class PlayerHeld : MonoBehaviour {
     }
 
     private void Start() {
+        currentPreviewRotation = Quaternion.identity;
         groundGrid = GameObject.Find("GardenGroundGrid");
         groundGrid.SetActive(false);
         PlayerInputManager.Instance.interact += ToggleGrid;
@@ -34,6 +37,8 @@ public class PlayerHeld : MonoBehaviour {
         PlayerInputManager.Instance.actionCanceled += OnPlaceCanceled;
         PlayerInputManager.Instance.placeStarted += OnPlaceStarted;
         PlayerInputManager.Instance.placeCanceled += OnPlaceCanceled;
+        PlayerInputManager.Instance.clockScroll += ClockScroll;
+        PlayerInputManager.Instance.aniticlockScroll += AnticlockScroll;
     }
 
     private void OnDisable() {
@@ -42,6 +47,8 @@ public class PlayerHeld : MonoBehaviour {
         PlayerInputManager.Instance.actionCanceled -= OnPlaceCanceled;
         PlayerInputManager.Instance.placeStarted -= OnPlaceStarted;
         PlayerInputManager.Instance.placeCanceled -= OnPlaceCanceled;
+        PlayerInputManager.Instance.clockScroll -= ClockScroll;
+        PlayerInputManager.Instance.aniticlockScroll -= AnticlockScroll;
     }
 
     private void Update() {
@@ -55,10 +62,25 @@ public class PlayerHeld : MonoBehaviour {
         }
         
     }
+    private void ClockScroll(object sender, EventArgs e) {
+        if (heldObject != null && isPlacing) {
+            currentPreviewRotation *= Quaternion.Euler(0, 90, 0);
+            Debug.Log("Scrolling!");
+        }
+    }
+
+    private void AnticlockScroll(object sender, EventArgs e) {
+        if (heldObject != null && isPlacing) {
+            currentPreviewRotation *= Quaternion.Euler(0, -90, 0);
+        }
+    }
+
     private void OnPlaceStarted(object sender, EventArgs e) {
         if (heldObject == null) return;
         isPlacing = true;
         groundGrid.SetActive(true);
+        
+        
         if (childCol != null) {
             childCol.enabled = true;
         }
@@ -95,6 +117,8 @@ public class PlayerHeld : MonoBehaviour {
             }
 
             heldObject.transform.position = currentPreviewPosition;
+            heldObject.transform.rotation = currentPreviewRotation;
+
         }
 
     }

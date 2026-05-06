@@ -11,6 +11,8 @@ public class PlayerInputManager : MonoBehaviour {
     public event EventHandler actionCanceled;
     public event EventHandler placeStarted;
     public event EventHandler placeCanceled;
+    public event EventHandler clockScroll;
+    public event EventHandler aniticlockScroll;
     private PlayerInputAction inputActions;
     public static PlayerInputManager Instance { get; private set; }
 
@@ -37,6 +39,7 @@ public class PlayerInputManager : MonoBehaviour {
         inputActions.Player.Action.canceled += PlayerActionCanceled;
         inputActions.Player.Place.performed += PlayerPlaceStarted;
         inputActions.Player.Place.canceled += PlayerPlaceCanceled;
+        inputActions.Player.Scroll.performed += PlayerScroll;
     }
 
     private void OnDisable() {
@@ -49,6 +52,20 @@ public class PlayerInputManager : MonoBehaviour {
         inputActions.Player.Action.canceled -= PlayerActionCanceled;
         inputActions.Player.Place.performed -= PlayerPlaceStarted;
         inputActions.Player.Place.canceled -= PlayerPlaceCanceled;
+        inputActions.Player.Scroll.performed -= PlayerScroll;
+    }
+
+    private void PlayerScroll(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
+        Vector2 scrollVector = obj.ReadValue<Vector2>();
+
+        if (scrollVector.y > 0) {
+            // Scrolled UP (Clockwise/Next)
+            clockScroll?.Invoke(this, EventArgs.Empty);
+        } 
+        else if (scrollVector.y < 0) {
+            // Scrolled DOWN (Anti-Clockwise/Previous)
+            aniticlockScroll?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     private void PlayerRunStarted(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
