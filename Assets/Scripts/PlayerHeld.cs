@@ -14,7 +14,8 @@ public class PlayerHeld : MonoBehaviour {
     [SerializeField] private Transform holdSocket;
     private bool isPlacing = false;
     private GameObject heldObject;
-    private Collider childCol;
+    private Collider objCol;
+    private Rigidbody objRB;
     private Vector3 currentPreviewPosition;
     private Quaternion currentPreviewRotation;
     private GameObject groundGrid;
@@ -52,6 +53,9 @@ public class PlayerHeld : MonoBehaviour {
     }
 
     private void Update() {
+        Debug.Log(heldObject);
+        if(objCol) Debug.Log("Found child-col");
+        if(objRB) Debug.Log("Found child-rb");
         OnPlaceUpdatePreview();
     }
 
@@ -81,8 +85,8 @@ public class PlayerHeld : MonoBehaviour {
         groundGrid.SetActive(true);
         
         
-        if (childCol != null) {
-            childCol.enabled = true;
+        if (objCol != null) {
+            objCol.enabled = true;
         }
     }
 
@@ -91,9 +95,13 @@ public class PlayerHeld : MonoBehaviour {
         PlaceObject(currentPreviewPosition);
         isPlacing = false;
         groundGrid.SetActive(false);
-        if (childCol != null) {
-            childCol.enabled = true;
-            childCol = null;
+        if (objCol != null) {
+            objCol.enabled = true;
+            objCol = null;
+        }
+        if (objRB != null) {
+            objRB.isKinematic = false;
+            objRB = null;
         }
     }
 
@@ -128,8 +136,8 @@ public class PlayerHeld : MonoBehaviour {
         isPlacing = true;
         groundGrid.SetActive(true);
 
-        if (childCol != null) {
-            childCol.enabled = true;
+        if (objCol != null) {
+            objCol.enabled = true;
         }
 
         SetLayerRecursively(heldObject, plantPlacedLayer);
@@ -139,8 +147,8 @@ public class PlayerHeld : MonoBehaviour {
         heldObject.transform.SetParent(null);
         heldObject.transform.position = finalPosition;
 
-        if (heldObject.TryGetComponent(out Rigidbody rb)) {
-            rb.isKinematic = false;
+        if (objRB != null) {
+            objRB.isKinematic = false;
         }
 
         heldObject = null;
@@ -161,16 +169,26 @@ public class PlayerHeld : MonoBehaviour {
 
     public void PickUp(GameObject obj) {
         heldObject = obj;
-        childCol = obj.GetComponentInChildren<BoxCollider>();
         
-        if (childCol != null) {
-            childCol.enabled = false;
+        objRB = obj.GetComponent<Rigidbody>();
+        if (objRB == null) {
+            objRB = obj.GetComponent<Rigidbody>();
         }
 
+        objCol = obj.GetComponent<BoxCollider>();
+        if (objCol == null) {
+            objCol = obj.GetComponent<Collider>();
+        }
 
         // Disable physics so it doesn't fight the player
-        if (heldObject.TryGetComponent(out Rigidbody rb)) {
-            rb.isKinematic = true;
+        if (objRB != null) {
+            objRB.linearVelocity = Vector3.zero;
+            objRB.angularVelocity = Vector3.zero;
+            objRB.isKinematic = true;
+        }
+
+        if (objCol != null) {
+            objCol.enabled = false;
         }
 
         // Snap to the hand socket

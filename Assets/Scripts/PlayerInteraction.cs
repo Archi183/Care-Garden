@@ -53,7 +53,7 @@ public class PlayerInteraction : MonoBehaviour {
         if (Physics.Raycast(raycastOrigin, raycastDirection, out hit, raycastDistance, interactLayer)) {
             rayHit = hit.transform;
             if (rayHit.childCount > 0) {
-                        GameObject child = rayHit.GetChild(0).gameObject;
+                        GameObject child = rayHit.GetChild(1).gameObject;
 
                         if (currentActiveChild != child) {
                             DisableCurrentChild();
